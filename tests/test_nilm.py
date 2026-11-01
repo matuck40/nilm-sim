@@ -76,3 +76,14 @@ def test_live_house_buffer():
     assert len(df) == 50
     assert df["P_shower"].iloc[0] > 4000 and df["P_shower"].iloc[-1] == 0
     assert set(CATALOG) == set(APPLIANCES)
+
+
+def test_hart_live_keeps_long_running_appliance():
+    """The app feeds Hart the whole LiveHouse buffer: if the buffer is shorter than
+    the time an appliance has been on, its turn-on edge falls out and Hart shows 0 W."""
+    hart = HartDisaggregator().fit(make_dataset(2), APPLIANCES)
+    live = LiveHouse(seed=1)
+    live.step(60, {})                    # house running before the shower: there is an edge
+    df = live.step(2 * 3600, {"shower": 1})
+    pred, _ = hart.predict(df["P"].to_numpy(), df["Q"].to_numpy())
+    assert pred["P_shower"].iloc[-1] > 4000
