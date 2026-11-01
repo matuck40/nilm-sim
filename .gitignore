@@ -1,0 +1,13 @@
+__pycache__/
+.venv/
+.pytest_cache/
+*.pyc
+data/
+.DS_Store
+.env
+*.env
+*.pem
+*.key
+.ruff_cache/
+reports/*.csv
+CLAUDE.md
