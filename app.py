@@ -12,6 +12,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 import streamlit as st
+from plotly.subplots import make_subplots
 
 from nilm_sim.dataset import APPLIANCES, make_dataset, split_by_house
 from nilm_sim.events import HartDisaggregator
@@ -78,10 +79,13 @@ with tab_live:
         left, right = st.columns([3, 2])
         tail = df.iloc[-900:]
         minutes = (tail.index - tail.index[-1]) / 60
-        fig = go.Figure(go.Scatter(x=minutes, y=tail["P"], mode="lines", name="aggregate P"))
-        fig.update_layout(height=320, margin={"l": 10, "r": 10, "t": 30, "b": 10},
-                          title="What the meter sees (last 15 min)",
-                          xaxis_title="minutes", yaxis_title="W")
+        fig = make_subplots(rows=2, cols=1, shared_xaxes=True, vertical_spacing=0.08,
+                            subplot_titles=("Active power P (W)", "Reactive power Q (var)"))
+        fig.add_trace(go.Scatter(x=minutes, y=tail["P"], mode="lines", name="P"), row=1, col=1)
+        fig.add_trace(go.Scatter(x=minutes, y=tail["Q"], mode="lines", name="Q"), row=2, col=1)
+        fig.update_layout(height=420, margin={"l": 10, "r": 10, "t": 60, "b": 10}, showlegend=False,
+                          title="What the meter sees (last 15 min)")
+        fig.update_xaxes(title_text="minutes", row=2, col=1)
         left.plotly_chart(fig, width="stretch")
         right.markdown(f"**Now:** P = {df['P'].iloc[-1]:.0f} W, Q = {df['Q'].iloc[-1]:.0f} var")
         right.dataframe(pd.DataFrame(rows).set_index("appliance"), width="stretch")
