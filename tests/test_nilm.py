@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import pytest
 
 from nilm_sim.appliances import CATALOG, FRIDGE
@@ -6,6 +7,7 @@ from nilm_sim.dataset import APPLIANCES, make_dataset, split_by_house
 from nilm_sim.events import HartDisaggregator, detect_events
 from nilm_sim.house import LiveHouse, simulate_house
 from nilm_sim.metrics import f1_on, mae, sae
+from nilm_sim.models import make_features
 
 
 @pytest.fixture(scope="module")
@@ -76,6 +78,17 @@ def test_live_house_buffer():
     assert len(df) == 50
     assert df["P_shower"].iloc[0] > 4000 and df["P_shower"].iloc[-1] == 0
     assert set(CATALOG) == set(APPLIANCES)
+
+
+def test_forest_features_use_only_past_and_present():
+    """Changing the future must not change any feature up to now (no leakage)."""
+    rng = np.random.default_rng(0)
+    p, q = rng.normal(500, 50, 4000), rng.normal(100, 10, 4000)
+    p2, q2 = p.copy(), q.copy()
+    p2[3000:] += 5000
+    q2[3000:] += 500
+    a, b = make_features(p, q), make_features(p2, q2)
+    pd.testing.assert_frame_equal(a.iloc[:3000], b.iloc[:3000])
 
 
 def test_hart_live_keeps_long_running_appliance():
