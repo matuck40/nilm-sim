@@ -85,8 +85,8 @@ def test_forest_features_use_only_past_and_present():
     rng = np.random.default_rng(0)
     p, q = rng.normal(500, 50, 4000), rng.normal(100, 10, 4000)
     p2, q2 = p.copy(), q.copy()
-    p2[3000:] += 5000
-    q2[3000:] += 500
+    p2[3000:] = rng.normal(500, 300, 1000)   # new future, both above and below the past:
+    q2[3000:] = rng.normal(100, 60, 1000)    # a one-sided shift would hide a future-looking min
     a, b = make_features(p, q), make_features(p2, q2)
     pd.testing.assert_frame_equal(a.iloc[:3000], b.iloc[:3000])
 
