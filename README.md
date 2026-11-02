@@ -20,9 +20,9 @@ A small sandbox for **non-intrusive load monitoring (NILM)**: a synthetic house 
 | Appliance | MAE Hart (W) | MAE RF (W) | F1 Hart | F1 RF |
 |---|---|---|---|---|
 | Shower | 10.8 | 1.6 | 0.99 | 1.00 |
-| Fridge | 3.5 | 3.5 | 1.00 | 0.99 |
+| Fridge | 3.5 | 3.5 | 1.00 | 0.98 |
 | Light | 1.5 | 4.6 | 0.92 | 0.80 |
-| TV | 7.5 | 5.3 | 0.83 | 0.85 |
+| TV | 7.5 | 5.3 | 0.82 | 0.84 |
 | Fan | 2.7 | 1.1 | 0.67 | 0.98 |
 
 Reading: Hart does well on clean resistive steps (light) and worse on the two-speed fan. A likely cause is that Hart learns a single signature per appliance, so one value (about 72 W, between the 55 W and 80 W speeds) has to cover both speeds, and switch-ons far from it can go unidentified. Hart also assigns every shower the same learned wattage, while the forest estimates each house's actual shower power. The forest's lower F1 on the light suggests it confuses the small 60 W step with other loads. These are three test houses of one day each, with few events per appliance (four fan sessions in total), so treat the differences as indicative.
