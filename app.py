@@ -68,8 +68,8 @@ with tab_live:
         df = house.step(speed, states) if running else house.df
         h_pred, _ = hart.predict(df["P"].to_numpy(), df["Q"].to_numpy())
         # Hart replays the whole buffer (6 h) so it still sees each switch-on event;
-        # the forest only needs its longest window (600 s) before the plotted 15 min.
-        f_pred = forest.predict(df.iloc[-1800:].reset_index(drop=True))
+        # the forest needs its longest window (the 1800 s base-load minimum) before the plotted 15 min.
+        f_pred = forest.predict(df.iloc[-2700:].reset_index(drop=True))
 
         rows = []
         for a in APPLIANCES:
