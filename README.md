@@ -39,6 +39,8 @@ python -m nilm_sim.report      # metrics on unseen homes -> reports/metrics.md
 streamlit run app.py           # opens http://localhost:8501
 ```
 
+The app trains its models once and saves them under `models/` (git-ignored). Later starts load the file; a change to the `nilm_sim` code or to the library versions changes the file name, so the models are trained again.
+
 ## Roadmap
 
 - Real data: UK-DALE / REFIT

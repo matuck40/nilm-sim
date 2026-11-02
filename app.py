@@ -18,6 +18,7 @@ from nilm_sim.dataset import APPLIANCES, make_dataset, split_by_house
 from nilm_sim.events import HartDisaggregator
 from nilm_sim.house import LiveHouse, simulate_house
 from nilm_sim.metrics import evaluate
+from nilm_sim.model_cache import cached_fit
 from nilm_sim.models import ForestDisaggregator
 
 N_HOUSES, N_TEST = 10, 3
@@ -26,13 +27,18 @@ COLORS = dict(zip(APPLIANCES, px.colors.qualitative.Set2, strict=False))
 st.set_page_config(page_title="nilm-sim", layout="wide")
 
 
-@st.cache_resource(show_spinner="Training Hart and Random Forest on the training houses (about 1 min)...")
-def train_models():
+def _fit_v0():
     houses = make_dataset(N_HOUSES)
     train, _ = split_by_house(houses, N_TEST)
     hart = HartDisaggregator().fit(train, APPLIANCES)
     forest = ForestDisaggregator().fit(train, APPLIANCES)
     return hart, forest, [df.attrs["house"] for df in train]
+
+
+# Trained once and saved under models/; later starts load the file (see nilm_sim/model_cache.py).
+@st.cache_resource(show_spinner="Loading the models (first run after a code change trains, about 1 min)...")
+def train_models():
+    return cached_fit("v0", _fit_v0)
 
 
 hart, forest, train_ids = train_models()
